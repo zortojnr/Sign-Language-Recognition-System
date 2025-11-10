@@ -1,10 +1,11 @@
 import streamlit as st
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Suppress TensorFlow warnings
 import tensorflow as tf
 import numpy as np
 import string
 from PIL import Image
 import io
-import os
 
 # Page configuration
 st.set_page_config(
@@ -68,7 +69,11 @@ def load_model():
     """Load the trained model"""
     model_path = 'models/sign_language_model.h5'
     if os.path.exists(model_path):
-        return tf.keras.models.load_model(model_path)
+        try:
+            return tf.keras.models.load_model(model_path)
+        except Exception as e:
+            st.error(f"Error loading model: {str(e)}")
+            return None
     else:
         return None
 
@@ -102,136 +107,147 @@ def predict_sign(model, image):
 
 # Main app
 def main():
-    # Header
+    # Header - Always show this first
     st.markdown('<h1 class="main-header">🤟 Sign Language Recognition System</h1>', unsafe_allow_html=True)
     st.markdown('<p class="sub-header">AI-Powered American Sign Language Letter Recognition</p>', unsafe_allow_html=True)
     
-    # Sidebar
+    # Sidebar - Always show this
     with st.sidebar:
-        st.header("📋 About")
-        st.markdown("""
-        This application uses a **Convolutional Neural Network (CNN)** 
-        to recognize American Sign Language letters.
-        
-        **Features:**
-        - 🎯 99.71% Accuracy
-        - 📸 Image Upload Support
-        - 🔍 Real-time Predictions
-        - 📊 Confidence Scores
-        
-        **Supported Letters:**
-        A-Z (excluding J and Z)
-        """)
-        
-        st.header("🔧 Instructions")
-        st.markdown("""
-        1. Upload a sign language image
-        2. Or use the camera to capture
-        3. View the prediction instantly
-        4. Check confidence scores
-        """)
-        
-        st.header("📊 Model Info")
-        st.markdown("""
-        - **Architecture**: CNN
-        - **Parameters**: 442,264
-        - **Input Size**: 28×28 grayscale
-        - **Classes**: 24 letters
-        """)
-    
-    # Load model
-    model = load_model()
-    
-    if model is None:
-        st.error("⚠️ Model not found! Please train the model first by running `python main.py`")
-        st.info("The model will be saved to `models/sign_language_model.h5` after training.")
-        return
-    
-    # Main content area
-    col1, col2 = st.columns([1, 1])
-    
-    with col1:
-        st.header("📤 Upload Image")
-        
-        # Image upload options
-        upload_option = st.radio(
-            "Choose input method:",
-            ["Upload Image", "Use Camera"],
-            horizontal=True
-        )
-        
-        uploaded_file = None
-        
-        if upload_option == "Upload Image":
-            uploaded_file = st.file_uploader(
-                "Choose an image file",
-                type=['png', 'jpg', 'jpeg'],
-                help="Upload a 28x28 grayscale image of a sign language letter"
-            )
-        else:
-            uploaded_file = st.camera_input("Take a picture")
-        
-        if uploaded_file is not None:
-            # Display uploaded image
-            image = Image.open(uploaded_file)
-            st.image(image, caption="Uploaded Image", use_container_width=True)
+            st.header("📋 About")
+            st.markdown("""
+            This application uses a **Convolutional Neural Network (CNN)** 
+            to recognize American Sign Language letters.
             
-            # Preprocess and predict
-            with st.spinner("Processing image..."):
-                processed_image = preprocess_image(image)
-                predicted_class, confidence, all_predictions = predict_sign(model, processed_image)
+            **Features:**
+            - 🎯 99.71% Accuracy
+            - 📸 Image Upload Support
+            - 🔍 Real-time Predictions
+            - 📊 Confidence Scores
             
-            # Display prediction
-            predicted_letter = CLASS_NAMES[predicted_class]
-            
-            st.markdown(f"""
-            <div class="prediction-box">
-                <h2>Prediction</h2>
-                <div class="prediction-letter">{predicted_letter.upper()}</div>
-                <h3>Confidence: {confidence * 100:.2f}%</h3>
-            </div>
-            """, unsafe_allow_html=True)
-    
-    with col2:
-        st.header("📊 Prediction Details")
-        
-        if uploaded_file is not None:
-            # Top 5 predictions
-            st.subheader("Top 5 Predictions")
-            top_5_indices = np.argsort(all_predictions)[-5:][::-1]
-            
-            for idx in top_5_indices:
-                letter = CLASS_NAMES[idx]
-                conf = all_predictions[idx]
-                bar_color = "#667eea" if idx == predicted_class else "#e0e0e0"
-                
-                st.markdown(f"**{letter.upper()}**")
-                st.progress(conf, text=f"{conf * 100:.2f}%")
-            
-            # Confidence distribution
-            st.subheader("Confidence Distribution")
-            chart_data = {CLASS_NAMES[i]: float(all_predictions[i]) for i in range(len(CLASS_NAMES))}
-            st.bar_chart(chart_data)
-            
-            # Model information
-            st.subheader("ℹ️ Model Information")
-            st.info(f"""
-            - **Predicted Letter**: {predicted_letter.upper()}
-            - **Confidence**: {confidence * 100:.2f}%
-            - **Class Index**: {predicted_class}
+            **Supported Letters:**
+            A-Z (excluding J and Z)
             """)
-        else:
-            st.info("👆 Upload an image or use the camera to see predictions here")
-            st.image("https://via.placeholder.com/400x300?text=Upload+Image+to+Start", use_container_width=True)
+            
+            st.header("🔧 Instructions")
+            st.markdown("""
+            1. Upload a sign language image
+            2. Or use the camera to capture
+            3. View the prediction instantly
+            4. Check confidence scores
+            """)
+            
+            st.header("📊 Model Info")
+            st.markdown("""
+            - **Architecture**: CNN
+            - **Parameters**: 442,264
+            - **Input Size**: 28×28 grayscale
+            - **Classes**: 24 letters
+            """)
     
-    # Footer
-    st.markdown("---")
-    st.markdown("""
-    <div style='text-align: center; color: #666; padding: 2rem;'>
-        <p>Sign Language Recognition System | Powered by TensorFlow & Streamlit</p>
-        <p>Model Accuracy: 99.71% | 24 ASL Letters Supported</p>
-    </div>
-    """, unsafe_allow_html=True)
+    try:
+        # Load model
+        with st.spinner("Loading model..."):
+            model = load_model()
+        
+        if model is None:
+            st.error("⚠️ Model not found! Please train the model first by running `python main.py`")
+            st.info("The model will be saved to `models/sign_language_model.h5` after training.")
+            return
+        
+        # Main content area
+        col1, col2 = st.columns([1, 1])
+        
+        with col1:
+            st.header("📤 Upload Image")
+            
+            # Image upload options
+            upload_option = st.radio(
+                "Choose input method:",
+                ["Upload Image", "Use Camera"],
+                horizontal=True
+            )
+            
+            uploaded_file = None
+            
+            if upload_option == "Upload Image":
+                uploaded_file = st.file_uploader(
+                    "Choose an image file",
+                    type=['png', 'jpg', 'jpeg'],
+                    help="Upload a 28x28 grayscale image of a sign language letter"
+                )
+            else:
+                uploaded_file = st.camera_input("Take a picture")
+            
+            if uploaded_file is not None:
+                try:
+                    # Display uploaded image
+                    image = Image.open(uploaded_file)
+                    st.image(image, caption="Uploaded Image", use_container_width=True)
+                    
+                    # Preprocess and predict
+                    with st.spinner("Processing image..."):
+                        processed_image = preprocess_image(image)
+                        predicted_class, confidence, all_predictions = predict_sign(model, processed_image)
+                    
+                    # Display prediction
+                    predicted_letter = CLASS_NAMES[predicted_class]
+                    
+                    st.markdown(f"""
+                    <div class="prediction-box">
+                        <h2>Prediction</h2>
+                        <div class="prediction-letter">{predicted_letter.upper()}</div>
+                        <h3>Confidence: {confidence * 100:.2f}%</h3>
+                    </div>
+                    """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.error(f"Error processing image: {str(e)}")
+        
+        with col2:
+            st.header("📊 Prediction Details")
+            
+            if uploaded_file is not None:
+                try:
+                    # Top 5 predictions
+                    st.subheader("Top 5 Predictions")
+                    top_5_indices = np.argsort(all_predictions)[-5:][::-1]
+                    
+                    for idx in top_5_indices:
+                        letter = CLASS_NAMES[idx]
+                        conf = float(all_predictions[idx])  # Convert numpy float32 to Python float
+                        bar_color = "#667eea" if idx == predicted_class else "#e0e0e0"
+                        
+                        st.markdown(f"**{letter.upper()}**")
+                        st.progress(conf, text=f"{conf * 100:.2f}%")
+                    
+                    # Confidence distribution
+                    st.subheader("Confidence Distribution")
+                    chart_data = {CLASS_NAMES[i]: float(all_predictions[i]) for i in range(len(CLASS_NAMES))}
+                    st.bar_chart(chart_data)
+                    
+                    # Model information
+                    st.subheader("ℹ️ Model Information")
+                    st.info(f"""
+                    - **Predicted Letter**: {predicted_letter.upper()}
+                    - **Confidence**: {float(confidence) * 100:.2f}%
+                    - **Class Index**: {int(predicted_class)}
+                    """)
+                except Exception as e:
+                    st.error(f"Error displaying predictions: {str(e)}")
+            else:
+                st.info("👆 Upload an image or use the camera to see predictions here")
+                st.image("https://via.placeholder.com/400x300?text=Upload+Image+to+Start", use_container_width=True)
+        
+        # Footer
+        st.markdown("---")
+        st.markdown("""
+        <div style='text-align: center; color: #666; padding: 2rem;'>
+            <p>Sign Language Recognition System | Powered by TensorFlow & Streamlit</p>
+            <p>Model Accuracy: 99.71% | 24 ASL Letters Supported</p>
+        </div>
+        """, unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"An error occurred: {str(e)}")
+        st.exception(e)
 
 if __name__ == "__main__":
     main()
