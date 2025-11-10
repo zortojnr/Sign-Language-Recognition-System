@@ -23,6 +23,9 @@ This project implements a CNN-based sign language recognition system that can cl
 ## ✨ Features
 
 - **High Accuracy**: Achieves 99.71% accuracy on validation data
+- **Professional Web Interface**: Modern, user-friendly Streamlit app
+- **Image Upload & Camera**: Support for both file upload and live camera capture
+- **Real-time Predictions**: Instant results with confidence scores
 - **CNN Architecture**: Uses convolutional layers for feature extraction
 - **Data Visualization**: Includes visualization of sample training images
 - **Preprocessing**: Automatic data normalization and label encoding
@@ -83,9 +86,36 @@ The dataset is stored in CSV format where:
 
 ## 💻 Usage
 
+<<<<<<< HEAD
 ### Running the Training Script
 
 Simply run the main script:
+=======
+### 🌐 Running the Web Interface (Recommended)
+
+After training the model, you can use the professional web interface:
+
+**Option 1: Using the batch file (Windows)**
+```bash
+run_app.bat
+```
+
+**Option 2: Using Streamlit directly**
+```bash
+streamlit run app.py
+```
+
+The web interface will open in your browser at `http://localhost:8501` with:
+- 📤 Image upload functionality
+- 📷 Camera capture support
+- 📊 Real-time predictions with confidence scores
+- 🎨 Professional, modern UI design
+- 📈 Top 5 predictions visualization
+
+### 🏋️ Running the Training Script
+
+First, train the model by running:
+>>>>>>> c014d9f (Add professional web interface with Streamlit - Added Streamlit web app (app.py) with modern UI design - Added image upload and camera capture functionality - Added real-time predictions with confidence scores - Updated README with web interface instructions - Added run_app.bat for easy app launching - Updated requirements.txt with Streamlit and Pillow)
 
 ```bash
 python main.py
@@ -98,6 +128,10 @@ This will:
 4. Build and compile the CNN model
 5. Train the model for 10 epochs
 6. Evaluate the model and display accuracy
+<<<<<<< HEAD
+=======
+7. Save the trained model to `models/sign_language_model.h5`
+>>>>>>> c014d9f (Add professional web interface with Streamlit - Added Streamlit web app (app.py) with modern UI design - Added image upload and camera capture functionality - Added real-time predictions with confidence scores - Updated README with web interface instructions - Added run_app.bat for easy app launching - Updated requirements.txt with Streamlit and Pillow)
 
 ### Expected Output
 
@@ -135,12 +169,26 @@ The model shows excellent generalization with minimal overfitting, achieving nea
 Sign-Language-Recognition-System/
 │
 ├── main.py                 # Main training script
+<<<<<<< HEAD
 ├── requirements.txt        # Python dependencies
 ├── README.md              # Project documentation
 ├── .gitignore             # Git ignore file
 │
 └── content/
     └── sign_mnist_train.csv   # Training dataset
+=======
+├── app.py                  # Streamlit web interface
+├── requirements.txt        # Python dependencies
+├── README.md              # Project documentation
+├── .gitignore             # Git ignore file
+├── run_app.bat            # Windows script to run the app
+│
+├── content/
+│   └── sign_mnist_train.csv   # Training dataset
+│
+└── models/
+    └── sign_language_model.h5  # Trained model (generated after training)
+>>>>>>> c014d9f (Add professional web interface with Streamlit - Added Streamlit web app (app.py) with modern UI design - Added image upload and camera capture functionality - Added real-time predictions with confidence scores - Updated README with web interface instructions - Added run_app.bat for easy app launching - Updated requirements.txt with Streamlit and Pillow)
 ```
 
 ## 📦 Requirements
@@ -150,6 +198,11 @@ Sign-Language-Recognition-System/
 - **pandas** >= 2.0.0
 - **matplotlib** >= 3.7.0
 - **scikit-learn** >= 1.3.0
+<<<<<<< HEAD
+=======
+- **streamlit** >= 1.28.0 (for web interface)
+- **Pillow** >= 10.0.0 (for image processing)
+>>>>>>> c014d9f (Add professional web interface with Streamlit - Added Streamlit web app (app.py) with modern UI design - Added image upload and camera capture functionality - Added real-time predictions with confidence scores - Updated README with web interface instructions - Added run_app.bat for easy app launching - Updated requirements.txt with Streamlit and Pillow)
 
 ## 🔧 Code Structure
 
@@ -189,3 +242,8 @@ This project is open source and available under the [MIT License](LICENSE).
 ---
 
 ⭐ If you find this project helpful, please consider giving it a star!
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> c014d9f (Add professional web interface with Streamlit - Added Streamlit web app (app.py) with modern UI design - Added image upload and camera capture functionality - Added real-time predictions with confidence scores - Updated README with web interface instructions - Added run_app.bat for easy app launching - Updated requirements.txt with Streamlit and Pillow)

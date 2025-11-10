@@ -97,3 +97,9 @@ except FileNotFoundError:
 # Evaluate the model
 loss, accuracy = model.evaluate(X_test, Y_test, verbose=1)
 print(f'Test Accuracy: {accuracy * 100:.2f}%')
+
+# Save the model
+import os
+os.makedirs('models', exist_ok=True)
+model.save('models/sign_language_model.h5')
+print('Model saved to models/sign_language_model.h5')
