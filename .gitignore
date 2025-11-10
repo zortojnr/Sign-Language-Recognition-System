@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Data files (uncomment if you don't want to commit large CSV files)
+# *.csv
+# content/
+
+# Model files
+*.h5
+*.pb
+*.tflite
+*.pkl
+*.joblib
+models/
+checkpoints/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# TensorFlow
+*.ckpt
+*.ckpt.*
+
